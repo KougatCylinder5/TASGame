@@ -10,11 +10,15 @@ public class CodeMemory : MonoBehaviour
 {
     public List<List<char>> rawLines;
     public List<GameObject> visualLines;
-    public int currentLineFocus;
-    public int currentDepthFocus;
-    public GameObject linePrefab;
-    public GameObject cursor;
-
+    [SerializeField]
+    private int currentLineFocus;
+    [SerializeField]
+    private int currentDepthFocus;
+    [SerializeField]
+    private GameObject linePrefab;
+    [SerializeField]
+    private GameObject cursor;
+    public Vector3 offset;
 
     // Start is called before the first frame update
     void Start()
@@ -28,9 +32,9 @@ public class CodeMemory : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        UpdateCursor();
+        
 
-        KeyCode key = Keyboard.CurrentKeyDown();
+        KeyCode key = Keyboard.GetCurrentKeyDown();
 
         switch (key)
         {
@@ -108,19 +112,27 @@ public class CodeMemory : MonoBehaviour
                     rawLines[currentLineFocus].Insert(currentDepthFocus++, ' ');
                 }
 
-                visualLines[currentLineFocus].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "<mspace=0em>" + new string(rawLines[currentLineFocus].ToArray());
+                visualLines[currentLineFocus].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "<mspace=0.75em>" + new string(rawLines[currentLineFocus].ToArray());
 
                 break;
 
         }
+        UpdateCursor();
     }
     private void UpdateCursor()
     {
-        int x = 125 + 13 * currentDepthFocus;
-        int y = -40 + -35 * currentLineFocus;
+        TextMeshProUGUI character = visualLines[currentLineFocus].transform.GetChild(0).GetComponent<TextMeshProUGUI>();
 
-        cursor.transform.localPosition = new(x, y);
+        try
+        {
+            Vector3 height = character.textInfo.characterInfo[currentDepthFocus - 1].bottomRight - character.textInfo.characterInfo[currentDepthFocus - 1].topRight;
+            cursor.transform.position = character.textInfo.characterInfo[currentDepthFocus - 1].bottomRight + height / 2 + offset + new Vector3(0, -35 * currentLineFocus-1);
+            Debug.Log("RUNNING");
+        }
+        catch
+        {
+            cursor.transform.localPosition = new Vector3(125, -40 + -35 * currentLineFocus);
+        }
         cursor.transform.SetAsLastSibling();
-
     }
 }
