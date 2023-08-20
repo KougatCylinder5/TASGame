@@ -21,7 +21,8 @@ public class CodeMemory : MonoBehaviour
     private GameObject cursor;
     [SerializeField]
     private GameObject scrollWheel;
-    public Vector3 offset;
+    [SerializeField]
+    private Vector3 offset;
 
     // Start is called before the first frame update
     void Start()
