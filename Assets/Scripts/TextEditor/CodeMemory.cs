@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CodeMemory : MonoBehaviour
 {
@@ -18,6 +19,8 @@ public class CodeMemory : MonoBehaviour
     private GameObject linePrefab;
     [SerializeField]
     private GameObject cursor;
+    [SerializeField]
+    private GameObject scrollWheel;
     public Vector3 offset;
 
     // Start is called before the first frame update
@@ -63,6 +66,7 @@ public class CodeMemory : MonoBehaviour
                         visualLines[i].transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "<mspace=0em>" + (i + 1);
                     }
                     currentDepthFocus = 0;
+                    scrollWheel.GetComponent<Scrollbar>().value = 0;
                 }
                 else
                 {
@@ -126,8 +130,7 @@ public class CodeMemory : MonoBehaviour
         try
         {
             Vector3 height = character.textInfo.characterInfo[currentDepthFocus - 1].bottomRight - character.textInfo.characterInfo[currentDepthFocus - 1].topRight;
-            cursor.transform.position = character.textInfo.characterInfo[currentDepthFocus - 1].bottomRight + height / 2 + offset + new Vector3(0, -35 * currentLineFocus-1);
-            Debug.Log("RUNNING");
+            cursor.transform.localPosition = character.textInfo.characterInfo[currentDepthFocus - 1].bottomRight + height / 2 + offset + new Vector3(0, -35 * currentLineFocus-1);
         }
         catch
         {

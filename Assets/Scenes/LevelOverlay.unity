@@ -335,7 +335,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -0.87, y: 0.0000023917755}
+  m_AnchoredPosition: {x: -0.87, y: 0.00006711052}
   m_SizeDelta: {x: 388, y: 100.8552}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &104677067
@@ -356,7 +356,8 @@ MonoBehaviour:
   currentDepthFocus: 0
   linePrefab: {fileID: 339671070939945278, guid: 1080298be7d98d94a88c18099ba598eb, type: 3}
   cursor: {fileID: 252532956}
-  offset: {x: 255, y: 846, z: 0}
+  scrollWheel: {fileID: 936686423}
+  offset: {x: 227, y: -25, z: 0}
 --- !u!1 &106593519
 GameObject:
   m_ObjectHideFlags: 0
@@ -392,10 +393,10 @@ RectTransform:
   - {fileID: 936686424}
   m_Father: {fileID: 530426452}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.6445, y: -25}
-  m_SizeDelta: {x: 404.13, y: 293}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -1.6445007, y: 25}
+  m_SizeDelta: {x: -63.869995, y: -342.57}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &106593521
 MonoBehaviour:
@@ -893,7 +894,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 79186284}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9996784
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
