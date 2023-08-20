@@ -116,6 +116,10 @@ public class CodeMemory : MonoBehaviour
                 {
                     rawLines[currentLineFocus].Insert(currentDepthFocus++, ' ');
                 }
+                if (key.ToString().Contains("Period"))
+                {
+                    rawLines[currentLineFocus].Insert(currentDepthFocus++, '.');
+                }
 
                 visualLines[currentLineFocus].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "<mspace=0.75em>" + new string(rawLines[currentLineFocus].ToArray());
 
@@ -135,7 +139,7 @@ public class CodeMemory : MonoBehaviour
         }
         catch
         {
-            cursor.transform.localPosition = new Vector3(125, -40 + -35 * currentLineFocus);
+            cursor.transform.localPosition = new Vector3(97, -40 + -35 * currentLineFocus);
         }
         cursor.transform.SetAsLastSibling();
     }
