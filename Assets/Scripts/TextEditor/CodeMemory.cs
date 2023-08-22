@@ -64,7 +64,7 @@ public class CodeMemory : MonoBehaviour
                     gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(383,visualLines.Count * 35 + 40);
                     for (int i = 0; i < visualLines.Count; i++)
                     {
-                        visualLines[i].transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "<mspace=0em>" + (i + 1);
+                        visualLines[i].transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = (i + 1).ToString();
                     }
                     currentDepthFocus = 0;
                     scrollWheel.GetComponent<Scrollbar>().value = 0;
@@ -93,7 +93,7 @@ public class CodeMemory : MonoBehaviour
                     currentDepthFocus = rawLines[currentLineFocus].Count;
                     for(int i = 0; i < visualLines.Count; i++)
                     {
-                        visualLines[i].transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "<mspace=0em>" + (i + 1);
+                        visualLines[i].transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = (i + 1).ToString();
                     }
 
                 }
@@ -121,7 +121,7 @@ public class CodeMemory : MonoBehaviour
                     rawLines[currentLineFocus].Insert(currentDepthFocus++, '.');
                 }
 
-                visualLines[currentLineFocus].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "<mspace=0.75em>" + new string(rawLines[currentLineFocus].ToArray());
+                visualLines[currentLineFocus].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = new string(rawLines[currentLineFocus].ToArray());
 
                 break;
 
@@ -134,8 +134,16 @@ public class CodeMemory : MonoBehaviour
 
         try
         {
-            Vector3 height = character.textInfo.characterInfo[currentDepthFocus - 1].bottomRight - character.textInfo.characterInfo[currentDepthFocus - 1].topRight;
-            cursor.transform.localPosition = character.textInfo.characterInfo[currentDepthFocus - 1].bottomRight + height / 2 + offset + new Vector3(0, -35 * currentLineFocus-1);
+            Vector3 height = Vector3.zero;
+            if (character.text[currentDepthFocus - 1].CompareTo(' ') == 0)
+            {
+                height = character.textInfo.characterInfo[currentDepthFocus - 2].bottomRight - character.textInfo.characterInfo[currentDepthFocus - 2].topRight + new Vector3(9, 0);
+            }
+            else 
+            {
+                height = character.textInfo.characterInfo[currentDepthFocus - 1].bottomRight - character.textInfo.characterInfo[currentDepthFocus - 1].topRight;
+            }
+            cursor.transform.localPosition = character.textInfo.characterInfo[currentDepthFocus - 1].bottomRight + height / 2 + offset + new Vector3(0, -35 * currentLineFocus - 1);
         }
         catch
         {

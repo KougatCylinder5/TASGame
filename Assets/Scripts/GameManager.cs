@@ -9,9 +9,15 @@ public class GameManager : MonoBehaviour
     public int levelNumber = 0;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        GameObject manager = GameObject.Find("GameManager");
+        if (manager != this || manager != null)
+        {
+            Destroy(this);
+        }
+
+        DontDestroyOnLoad(transform.gameObject);
     }
 
     // Update is called once per frame

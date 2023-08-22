@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class CodeParsing : MonoBehaviour
 {
     public static CodeMemory textLines;
-    public static List<Task> tasks = new();
+    private static List<Task> tasks = new();
+
+    public static List<Task> Tasks { get { return tasks; } }
 
     // Start is called before the first frame update
     void Start()
@@ -23,14 +24,22 @@ public class CodeParsing : MonoBehaviour
 
         tasks.Clear();
 
-        foreach(List<char> partial in textLines.rawLines)
+        foreach (List<char> partial in textLines.rawLines)
         {
-            string rawLine =  new(partial.ToArray());
+            string rawLine = new(partial.ToArray());
+            rawLine = rawLine.Trim();
             List<string> splitLine = rawLine.Split(' ').ToList();
-            if (splitLine[0].Equals(string.Empty))
+            for(int i = 0; i < splitLine.Count; i++)
+            {
+                if (splitLine[i].Equals(String.Empty) || splitLine[i].Equals(" "))
+                {
+                    splitLine.RemoveAt(i);
+                }
+            }
+            if (splitLine.Count == 0 || splitLine[0].Equals(string.Empty))
             {
                 continue;
-            } 
+            }
             if (!Enum.TryParse<Commands>(splitLine[0], true, out Commands result))
             {
                 throw new NotSupportedException();
@@ -41,9 +50,9 @@ public class CodeParsing : MonoBehaviour
             switch (result)
             {
                 case Commands.Stop:
-                    if(splitLine.Count == 1)
+                    if (splitLine.Count == 1)
                     {
-                        
+
                         task.command = result;
                         task.direction = Direction.None;
                         task.waitType = WaitForType.None;
@@ -54,10 +63,10 @@ public class CodeParsing : MonoBehaviour
 
                 case Commands.Wait:
                 case Commands.WaitUntil:
-                    
-                    if(result == Commands.Wait)
+
+                    if (result == Commands.Wait)
                     {
-                        if(!double.TryParse(splitLine[1], out double value))
+                        if (!double.TryParse(splitLine[1], out double value))
                         {
                             throw new NotSupportedException();
                         }
@@ -65,17 +74,14 @@ public class CodeParsing : MonoBehaviour
                     }
                     else
                     {
-                        if(!Enum.TryParse(splitLine[1], true, out WaitForType type) || double.TryParse(splitLine[1], out double _)){
+                        if (!Enum.TryParse(splitLine[1], true, out WaitForType type) || double.TryParse(splitLine[1], out double _))
+                        {
                             throw new NotSupportedException();
                         }
                         task.waitType = type;
                     }
                     task.command = result;
                     task.direction = Direction.None;
-                    
-                    
-
-
                     break;
                 default:
                     if (Enum.TryParse<Direction>(splitLine[1], true, out Direction direction))
@@ -87,11 +93,10 @@ public class CodeParsing : MonoBehaviour
                         break;
                     }
                     throw new NotSupportedException();
-                    
+
             }
             tasks.Add(task);
         }
-        
     }
 }
 public enum Commands
