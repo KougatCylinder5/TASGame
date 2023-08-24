@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelBuilder : MonoBehaviour
 {
@@ -12,13 +13,19 @@ public class LevelBuilder : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        SceneManager.LoadScene("LevelOverlay", LoadSceneMode.Additive);
+
         PlayerPrefs.SetString("ChosenLevel", "Level 1");
 
         chosenLevel = "Data/Levels/"+PlayerPrefs.GetString("ChosenLevel");
 
         levelInfo = Resources.Load(chosenLevel) as TextAsset;
         WorldInfo info = JsonUtility.FromJson<WorldInfo>(levelInfo.text);
-        Debug.Log(info.ToString());
+        foreach(WorldObject obj in info.objects)
+        {
+            Instantiate(Resources.Load("Level Generator/" + obj.size + " " + obj.type) as GameObject, new Vector2(obj.x, obj.y), Quaternion.Euler(0, 0, 0));
+        }
     }
 }
 public class WorldInfo
@@ -46,8 +53,8 @@ public class WorldInfo
 [System.Serializable]
 public class WorldObject
 {
-    public double x;
-    public double y;
+    public float x;
+    public float y;
     public ObjectType type;
     public ObjectSize size;
 } 
