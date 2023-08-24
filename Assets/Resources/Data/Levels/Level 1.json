@@ -1,0 +1,13 @@
+{
+    "name" : "Level 1",
+    "description" : "",
+    "objects" : [
+        {
+            "x" : 0,
+            "y" : 0,
+            "type" : 0,
+            "size" : 3
+        }
+    ]
+    
+}

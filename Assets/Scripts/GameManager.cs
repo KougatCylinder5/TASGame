@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public int levelNumber = 0;
-
     // Start is called before the first frame update
     void Awake()
     {
