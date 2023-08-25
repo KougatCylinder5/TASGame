@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class CodeMemory : MonoBehaviour
 {
     public List<List<char>> rawLines;

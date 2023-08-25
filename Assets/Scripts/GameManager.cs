@@ -6,17 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Awake()
-    {
-        GameObject manager = GameObject.Find("GameManager");
-        if (manager != this || manager != null)
-        {
-            Destroy(this);
-        }
-
-        DontDestroyOnLoad(transform.gameObject);
-    }
+    
 
     // Update is called once per frame
     void Update()

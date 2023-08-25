@@ -17,15 +17,20 @@ public class LevelBuilder : MonoBehaviour
         SceneManager.LoadScene("LevelOverlay", LoadSceneMode.Additive);
 
         PlayerPrefs.SetString("ChosenLevel", "Level 1");
-
-        chosenLevel = "Data/Levels/"+PlayerPrefs.GetString("ChosenLevel");
-
-        levelInfo = Resources.Load(chosenLevel) as TextAsset;
+        
+        chosenLevel = PlayerPrefs.GetString("ChosenLevel");
+        Debug.Log(chosenLevel);
+        levelInfo = Resources.Load("Data/Levels/"+chosenLevel) as TextAsset;
         WorldInfo info = JsonUtility.FromJson<WorldInfo>(levelInfo.text);
+        Debug.Log(info);
         foreach(WorldObject obj in info.objects)
         {
             Instantiate(Resources.Load("Level Generator/" + obj.size + " " + obj.type) as GameObject, new Vector2(obj.x, obj.y), Quaternion.Euler(0, 0, 0));
         }
+    }
+    void Update()
+    {
+        
     }
 }
 public class WorldInfo
