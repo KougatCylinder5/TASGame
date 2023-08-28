@@ -24,8 +24,10 @@ public class LevelBuilder : MonoBehaviour
         WorldInfo info = JsonUtility.FromJson<WorldInfo>(levelInfo.text);
         Debug.Log(info);
         foreach(WorldObject obj in info.objects)
-        {
-            Instantiate(Resources.Load("Level Generator/" + obj.size + " " + obj.type) as GameObject, new Vector2(obj.x, obj.y), Quaternion.Euler(0, 0, 0));
+        { 
+            string toLoad = "Level Generator/" + obj.size + " " +obj.type;
+            GameObject gameObject = Resources.Load(toLoad) as GameObject;
+            Instantiate(gameObject, new Vector2(obj.x, obj.y), Quaternion.Euler(0, 0, 0));
         }
     }
     void Update()
@@ -54,6 +56,10 @@ public class WorldInfo
 
         return output;
     }
+    public WorldInfo()
+    {
+        objects = new();
+    }
 }
 [System.Serializable]
 public class WorldObject
@@ -62,6 +68,13 @@ public class WorldObject
     public float y;
     public ObjectType type;
     public ObjectSize size;
+    public WorldObject(float x, float y, ObjectType type, ObjectSize size)
+    {
+        this.x = x;
+        this.y = y;
+        this.type = type;
+        this.size = size;
+    }
 } 
 public enum ObjectSize
 {
