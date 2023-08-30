@@ -10,14 +10,13 @@ public class LevelBuilder : MonoBehaviour
 
     public string chosenLevel;
     public TextAsset levelInfo;
+
+    public static bool LevelLoaded = false;
     // Start is called before the first frame update
     void Start()
     {
-
-        SceneManager.LoadScene("LevelOverlay", LoadSceneMode.Additive);
-
-        PlayerPrefs.SetString("ChosenLevel", "Level 1");
         
+        PlayerPrefs.SetString("ChosenLevel", "Level 1");
         chosenLevel = PlayerPrefs.GetString("ChosenLevel");
         Debug.Log(chosenLevel);
         levelInfo = Resources.Load("Data/Levels/"+chosenLevel) as TextAsset;
@@ -29,6 +28,7 @@ public class LevelBuilder : MonoBehaviour
             GameObject gameObject = Resources.Load(toLoad) as GameObject;
             Instantiate(gameObject, new Vector2(obj.x, obj.y), Quaternion.Euler(0, 0, 0));
         }
+        LevelLoaded = true;
     }
     void Update()
     {
@@ -94,6 +94,7 @@ public enum ObjectSize
     _4x2,
     _4x3,
     _4x4,
+    
 }
 
 public enum ObjectType
@@ -102,5 +103,6 @@ public enum ObjectType
     Tile,
     Boost,
     Checkpoint,
-    End
+    End,
+    Robot
 }

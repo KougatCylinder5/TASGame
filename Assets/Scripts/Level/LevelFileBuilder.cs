@@ -13,19 +13,19 @@ public class LevelFileBuilder : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SceneManager.LoadScene("LevelOverlay", LoadSceneMode.Additive);
+        //SceneManager.LoadScene("LevelOverlay", LoadSceneMode.Additive);
 
         WorldInfo info = new();
-
-        info.name = base.name;
+        info.name = name;
         info.description = description;
 
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("WorldTiles"))
         {
             string size = obj.name.Substring(0, obj.name.IndexOf(" "));
-            string type = obj.name.Substring(obj.name.IndexOf(" ") + 1);
+            string type = obj.name.Substring(obj.name.IndexOf(" ") + 1, obj.name.LastIndexOf(' '));
             Enum.TryParse(type, true, out ObjectType Type);
             Enum.TryParse(size, true, out ObjectSize Size);
+            
             info.objects.Add(new WorldObject(obj.transform.position.x, obj.transform.position.y, Type, Size));
         }
 

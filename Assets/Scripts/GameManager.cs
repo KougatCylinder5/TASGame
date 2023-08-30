@@ -3,17 +3,48 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    
+    public Image visibleCover;
+    AsyncOperation op;
+    private void Start()
+    {
+        //SceneManager.MergeScenes(SceneManager.)
+        op = SceneManager.LoadSceneAsync("Level", LoadSceneMode.Additive);
+        StartCoroutine(nameof(removeCover));
+    }
+
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+
+
+    }
+
+    private IEnumerator removeCover()
+    {
+        while (true)
+        {
+            if (LevelBuilder.LevelLoaded)
+            {
+                visibleCover.color = new Color(255, 255, 255, visibleCover.color.a-1);
+            }
+            if(visibleCover.color.a < 0 && op.isDone)
+            {
+                SceneManager.MergeScenes( SceneManager.GetActiveScene(),SceneManager.GetSceneByName("Level"));
+                Destroy(visibleCover.gameObject);
+                break;
+            }
+            yield return new WaitForSecondsRealtime(0.5f);
+        }
+        yield return null;
     }
 }
+
+
 namespace UnityEngine {
     static class Keyboard
     {
