@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Windows;
 
 public class LevelFileBuilder : MonoBehaviour
 {
@@ -21,8 +23,10 @@ public class LevelFileBuilder : MonoBehaviour
 
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("WorldTiles"))
         {
-            string size = obj.name.Substring(0, obj.name.IndexOf(" "));
-            string type = obj.name.Substring(obj.name.IndexOf(" ") + 1, obj.name.LastIndexOf(' '));
+            
+            string[] value = Regex.Match(obj.name, ".*\\ |\\ .*").Value.Split();
+            string type = value[1];
+            string size = value[0];
             Enum.TryParse(type, true, out ObjectType Type);
             Enum.TryParse(size, true, out ObjectSize Size);
             
