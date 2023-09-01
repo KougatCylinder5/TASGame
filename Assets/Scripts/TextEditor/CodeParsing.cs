@@ -66,7 +66,7 @@ public class CodeParsing : MonoBehaviour
 
                     if (result == Commands.Wait)
                     {
-                        if (!double.TryParse(splitLine[1], out double value))
+                        if (!double.TryParse(splitLine[1], out double value) || value < 0.02f)
                         {
                             throw new NotSupportedException();
                         }
@@ -84,7 +84,7 @@ public class CodeParsing : MonoBehaviour
                     task.direction = Direction.None;
                     break;
                 default:
-                    if (Enum.TryParse<Direction>(splitLine[1], true, out Direction direction))
+                    if (Enum.TryParse(splitLine[1], true, out Direction direction))
                     {
                         task.command = result;
                         task.direction = direction;
@@ -96,6 +96,10 @@ public class CodeParsing : MonoBehaviour
 
             }
             tasks.Add(task);
+        }
+        foreach(Task task in tasks)
+        {
+            Debug.Log(task);
         }
     }
 }
