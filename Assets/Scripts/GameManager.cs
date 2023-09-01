@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public Image visibleCover;
+    public GameObject visibleCover;
+    private Image image;
+    private TextMeshProUGUI loadingText;
     AsyncOperation op;
     private void Start()
     {
@@ -26,21 +29,24 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator removeCover()
     {
+        image = visibleCover.GetComponent<Image>();
+        loadingText = visibleCover.GetComponentInChildren<TextMeshProUGUI>();
+
         while (true)
         {
             if (LevelBuilder.LevelLoaded)
             {
-                visibleCover.color = new Color(255, 255, 255, visibleCover.color.a-1);
+                image.color = new Color(43, 43, 43, image.color.a - 1f);
+                loadingText.color = new Color(255, 255, 255, loadingText.color.a - 1f);
             }
-            if(visibleCover.color.a < 0 && op.isDone)
+            if(image.color.a < 0 && op.isDone)
             {
                 SceneManager.MergeScenes( SceneManager.GetActiveScene(),SceneManager.GetSceneByName("Level"));
                 Destroy(visibleCover.gameObject);
                 break;
             }
-            yield return new WaitForSecondsRealtime(0.5f);
+            yield return new WaitForSecondsRealtime(0.1f);
         }
-        yield return null;
     }
 }
 

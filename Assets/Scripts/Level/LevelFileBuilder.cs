@@ -24,7 +24,7 @@ public class LevelFileBuilder : MonoBehaviour
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("WorldTiles"))
         {
             
-            string[] value = Regex.Match(obj.name, ".*\\ |\\ .*").Value.Split();
+            string[] value = obj.name.Split();
             string type = value[1];
             string size = value[0];
             Enum.TryParse(type, true, out ObjectType Type);

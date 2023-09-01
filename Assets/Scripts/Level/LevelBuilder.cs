@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class LevelBuilder : MonoBehaviour
 {
-    public Queue<GameObject> Objects;
+    public static List<StartPosition> Objects = new();
 
     public string chosenLevel;
     public TextAsset levelInfo;
@@ -18,21 +18,27 @@ public class LevelBuilder : MonoBehaviour
         
         PlayerPrefs.SetString("ChosenLevel", "Level 1");
         chosenLevel = PlayerPrefs.GetString("ChosenLevel");
-        Debug.Log(chosenLevel);
         levelInfo = Resources.Load("Data/Levels/"+chosenLevel) as TextAsset;
         WorldInfo info = JsonUtility.FromJson<WorldInfo>(levelInfo.text);
-        Debug.Log(info);
-        foreach(WorldObject obj in info.objects)
-        { 
-            string toLoad = "Level Generator/" + obj.size + " " +obj.type;
+        foreach (WorldObject obj in info.objects)
+        {
+            string toLoad = "Level Generator/" + obj.size + " " + obj.type;
             GameObject gameObject = Resources.Load(toLoad) as GameObject;
-            Instantiate(gameObject, new Vector2(obj.x, obj.y), Quaternion.Euler(0, 0, 0));
+            Objects.Add(new StartPosition(new Vector2(obj.x,obj.y), Instantiate(gameObject, new Vector2(obj.x, obj.y), Quaternion.Euler(0, 0, 0))));
         }
         LevelLoaded = true;
     }
     void Update()
     {
         
+    }
+
+    public static void RestartLevel()
+    {
+        foreach(StartPosition obj in Objects)
+        {
+            obj.ResetPos();
+        }
     }
 }
 public class WorldInfo
@@ -105,4 +111,28 @@ public enum ObjectType
     Checkpoint,
     End,
     Robot
+}
+
+
+public class StartPosition
+{
+    public Vector2 pos;
+    public GameObject obj;
+
+    public StartPosition(Vector2 pos, GameObject obj)
+    {
+        this.pos = pos;
+        this.obj = obj;
+    }
+
+    public void ResetPos()
+    {
+        obj.transform.position = pos;
+        obj.transform.rotation = Quaternion.identity;
+        try
+        {
+            obj.gameObject.GetComponent<Rigidbody>().velocity = new();
+        }
+        catch{}
+    }
 }
