@@ -7,9 +7,9 @@ using UnityEngine;
 public class CodeParsing : MonoBehaviour
 {
     public static CodeMemory textLines;
-    private static List<Task> tasks = new();
+    private static Queue<Task> tasks = new();
 
-    public static List<Task> Tasks { get { return tasks; } }
+    public static Queue<Task> Tasks { get { return tasks; } }
 
     // Start is called before the first frame update
     void Start()
@@ -83,21 +83,53 @@ public class CodeParsing : MonoBehaviour
                     task.command = result;
                     task.direction = Direction.None;
                     break;
-                default:
+                case Commands.Hook:
                     if (Enum.TryParse(splitLine[1], true, out Direction direction))
                     {
                         task.command = result;
                         task.direction = direction;
                         task.waitType = WaitForType.None;
                         task.value = double.NaN;
+                        try{
+                            if (Enum.TryParse(splitLine[2], true, out Direction direction2))
+                            {
+                                task.direction2 = direction2;
+                            }
+                        }catch{}
+                        break;
+                    }
+                    throw new NotSupportedException();
+                case Commands.Jump:
+                    task.command = result;
+                    task.direction = Direction.None;
+                    task.waitType = WaitForType.None;
+                    task.value = double.NaN;
+                    break;
+                default:
+                    if (Enum.TryParse(splitLine[1], true, out Direction direction3))
+                    {
+                        if(direction3 == Direction.Up || direction3 == Direction.Down)
+                        {
+                            throw new NotSupportedException();
+                        }
+                        task.command = result;
+                        task.direction = direction3;
+                        task.waitType = WaitForType.None;
+                        task.value = double.NaN;
+                        try{
+                            if (splitLine[2] != "" && splitLine[2] != " ")
+                            {
+                                throw new NotSupportedException();
+                            }
+                        }catch(ArgumentOutOfRangeException ex){}
                         break;
                     }
                     throw new NotSupportedException();
 
             }
-            tasks.Add(task);
+            tasks.Enqueue(task);
         }
-        foreach(Task task in tasks)
+        foreach(var task in tasks)
         {
             Debug.Log(task);
         }
@@ -105,6 +137,7 @@ public class CodeParsing : MonoBehaviour
 }
 public enum Commands
 {
+    None,
     Jump,
     Walk,
     Run,
@@ -129,16 +162,18 @@ public enum WaitForType
     Boost,
     Time
 }
+[Serializable]
 public class Task
 {
 
     public Commands command;
     public Direction direction;
+    public Direction direction2;
     public WaitForType waitType;
     public double value = double.NaN;
 
     public override string ToString()
     {
-        return Enum.GetName(typeof(Commands), command) + Enum.GetName(typeof(Direction), direction) + Enum.GetName(typeof(WaitForType), waitType) + value.ToString();
+        return Enum.GetName(typeof(Commands), command) + Enum.GetName(typeof(Direction), direction) + Enum.GetName(typeof(Direction), direction2) + Enum.GetName(typeof(WaitForType), waitType) + value.ToString();
     }
 }
