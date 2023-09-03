@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -12,9 +13,13 @@ public class RobotController : MonoBehaviour
 
     public List<GameObject> buttons;
 
-    public static bool Paused = true, beginningOfLevel = true;
+    public static bool Paused = true;
+    public bool beginningOfLevel = true;
 
     public Task currentTask = new();
+
+    public static GameObject waitingForObject;
+    public GameObject hook;
     // Start is called before the first frame update
     void Awake()
     {
@@ -68,6 +73,7 @@ public class RobotController : MonoBehaviour
         if(currentTask.command == Commands.None && CodeParsing.Tasks.TryPeek(out Task task))
         {
             currentTask = task;
+            CodeParsing.Tasks.Dequeue();
         }
         if (currentTask.command == Commands.None)
             return;
@@ -76,28 +82,84 @@ public class RobotController : MonoBehaviour
         {
             case Commands.Walk:
                 normalizedDirection = DirectionToVector2(new() { currentTask.direction });
-                robotBody.AddForce(normalizedDirection * (2<<2));
+                robotBody.AddForce(normalizedDirection * (2<<2), ForceMode.Acceleration);
                 break;
             case Commands.Slide:
                 //do set image/hitbox here
-                goto case Commands.Run;
+                break;
             case Commands.Run:
                 normalizedDirection = DirectionToVector2(new() { currentTask.direction });
-                robotBody.AddForce(normalizedDirection);
+                robotBody.AddForce(normalizedDirection * (2 << 3), ForceMode.Acceleration);
                 break;
             case Commands.Jump:
-                robotBody.AddForce(Vector2.up * 200);
+                robotBody.AddForce(Vector2.up * 400, ForceMode.Acceleration);
                 currentTask.command = Commands.None;
-                CodeParsing.Tasks.Dequeue();
+                break;
+            case Commands.Stop:
+                robotBody.AddForce(new Vector2(Mathf.Clamp(-robotBody.velocity.x,-0.25f,0.25f), 0), ForceMode.Acceleration);
                 break;
             default:
                 break;
         }
-    }
 
+        try
+        {
+            Task nextTask = CodeParsing.Tasks.Peek();
+            switch (nextTask.command)
+            {
+                case Commands.Wait:
+                    nextTask.value -= Time.fixedDeltaTime;
+                    if (nextTask.value <= 0)
+                    {
+                        CodeParsing.Tasks.Dequeue();
+                        currentTask.command = Commands.None;
+                    }
+                    break;
+                case Commands.Until:
+                    Debug.Log(waitingForObject);
+                    if (waitingForObject != null && waitingForObject.name.Contains(Enum.GetName(typeof(WaitForType), nextTask.waitType)))
+                    {
+                        CodeParsing.Tasks.Dequeue();
+                        currentTask.command = Commands.None;
+                    }
+                    break;
+                case Commands.Hook:
+                    
+                    StartCoroutine(ExtendHook(CodeParsing.Tasks.Dequeue()));
+                    break;
+            }
+        }
+        catch (InvalidOperationException) 
+        {}
+    }
+    private IEnumerator ExtendHook(Task task)
+    {
+        LineRenderer line = hook.GetComponent<LineRenderer>();
+
+        while (true)
+        {
+            if (Paused)
+            {
+                yield return null;
+            }
+            Vector2 direction = DirectionToVector2(new() { task.direction, task.direction2 });
+            
+            if(Mathf.Sqrt(line.GetPosition(0).magnitude * line.GetPosition(1).magnitude) > 5)
+            {
+                line.SetPosition(1, robot.transform.position);
+                break;
+            }
+
+            hook.transform.Translate(direction);
+
+            yield return new WaitForFixedUpdate();
+        }
+        
+    }
     private Vector2 DirectionToVector2(List<Direction> directions)
     {
         Vector2 vector = Vector2.zero;
+        
         foreach (Direction direction in directions)
         {
             switch (direction)
@@ -113,6 +175,8 @@ public class RobotController : MonoBehaviour
                     break;
                 case Direction.Left:
                     vector.x--;
+                    break;
+                default:
                     break;
             }
             vector.Normalize();
@@ -131,17 +195,13 @@ public class RobotController : MonoBehaviour
         buttons.Add(GameObject.Find("Pause"));
         buttons.Add(GameObject.Find("Advance"));
         buttons.Add(GameObject.Find("Restart"));
-        buttons[0].GetComponent<Button>().onClick.AddListener(delegate { Paused = false; });
+        buttons[0].GetComponent<Button>().onClick.AddListener(delegate { waitingForObject = null; });
+        buttons[0].GetComponent<Button>().onClick.AddListener(() => LevelBuilder.RestartLevel());
         buttons[0].GetComponent<Button>().onClick.AddListener(() => CodeParsing.GenerateCommands());
         buttons[1].GetComponent<Button>().onClick.AddListener(() => PauseCode());
         buttons[2].GetComponent<Button>().onClick.AddListener(delegate { Advance(true); });
         buttons[3].GetComponent<Button>().onClick.AddListener(() => LevelBuilder.RestartLevel());
-        buttons[3].GetComponent<Button>().onClick.AddListener(
-            delegate
-            {
-                currentTask = new();
-                CodeParsing.Tasks.Clear();
-            });
+        buttons[3].GetComponent<Button>().onClick.AddListener(delegate { currentTask = new(); CodeParsing.Tasks.Clear(); });
 
     }
 }

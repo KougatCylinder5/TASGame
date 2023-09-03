@@ -62,7 +62,7 @@ public class CodeParsing : MonoBehaviour
                     throw new NotSupportedException();
 
                 case Commands.Wait:
-                case Commands.WaitUntil:
+                case Commands.Until:
 
                     if (result == Commands.Wait)
                     {
@@ -121,7 +121,7 @@ public class CodeParsing : MonoBehaviour
                             {
                                 throw new NotSupportedException();
                             }
-                        }catch(ArgumentOutOfRangeException ex){}
+                        }catch (ArgumentOutOfRangeException) { }
                         break;
                     }
                     throw new NotSupportedException();
@@ -145,7 +145,7 @@ public enum Commands
     Slide,
     Hook,
     Wait,
-    WaitUntil
+    Until
 }
 public enum Direction
 {
